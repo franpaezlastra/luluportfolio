@@ -1,0 +1,84 @@
+ARCHIVOS DE DEMOSTRACIÓN NECESARIOS
+=====================================
+
+Esta carpeta debe contener las siguientes imágenes y videos de demostración:
+
+IMÁGENES PRINCIPALES:
+- hero-lulu.webp (imagen alta/vertical) - Imagen de fondo del hero (la foto que subiste) ✅ YA COPIADA
+- photographer.jpg (800x800) - Foto de la fotógrafa para la página "Sobre mí"
+
+NOTA: La imagen hero-lulu.webp debe ser la foto de la mujer con la cámara al atardecer.
+Se centrará automáticamente y se ajustará para verse perfecta en pantalla completa.
+
+FOTOS POR CATEGORÍAS:
+
+DEPORTE (6 fotos):
+- deporte1.jpg (1600x1067)
+- deporte2.jpg (1600x1067)
+- deporte3.jpg (1200x800)
+- deporte4.jpg (1600x1067)
+- deporte5.jpg (1200x800)
+- deporte6.jpg (1600x1067)
+
+PAISAJES (6 fotos):
+- paisaje1.jpg (1600x900)
+- paisaje2.jpg (1200x800)
+- paisaje3.jpg (1600x900)
+- paisaje4.jpg (1600x900)
+- paisaje5.jpg (1200x800)
+- paisaje6.jpg (1600x900)
+
+AMIGAS (5 fotos):
+- amigas1.jpg (1200x800)
+- amigas2.jpg (1600x1067)
+- amigas3.jpg (1200x800)
+- amigas4.jpg (1600x1067)
+- amigas5.jpg (1200x800)
+
+TRABAJO (5 fotos):
+- trabajo1.jpg (1600x1067)
+- trabajo2.jpg (1200x800)
+- trabajo3.jpg (1600x1067)
+- trabajo4.jpg (1200x800)
+- trabajo5.jpg (1600x1067)
+
+REELS VERTICALES (formato 9:16, 720x1280 o superior):
+
+REELS - DEPORTE (3 reels):
+- reel-deporte1.mp4 + reel-deporte1-poster.jpg
+- reel-deporte2.mp4 + reel-deporte2-poster.jpg
+- reel-deporte3.mp4 + reel-deporte3-poster.jpg
+
+REELS - PAISAJES (3 reels):
+- reel-paisaje1.mp4 + reel-paisaje1-poster.jpg
+- reel-paisaje2.mp4 + reel-paisaje2-poster.jpg
+- reel-paisaje3.mp4 + reel-paisaje3-poster.jpg
+
+REELS - AMIGAS (3 reels):
+- reel-amigas1.mp4 + reel-amigas1-poster.jpg
+- reel-amigas2.mp4 + reel-amigas2-poster.jpg
+- reel-amigas3.mp4 + reel-amigas3-poster.jpg
+
+REELS - TRABAJO (3 reels):
+- reel-trabajo1.mp4 + reel-trabajo1-poster.jpg
+- reel-trabajo2.mp4 + reel-trabajo2-poster.jpg
+- reel-trabajo3.mp4 + reel-trabajo3-poster.jpg
+
+REELS DE INSTAGRAM - CON VIDEO PREVIEW:
+Para reels que enlazan a Instagram pero quieres mostrar un preview del video:
+- arbol_flores_video.mp4 (5-10 segundos del video original)
+- arbol_flores_poster.jpg (captura del primer frame)
+
+INSTRUCCIONES PARA DESCARGAR VIDEOS DE INSTAGRAM:
+1. Usa herramientas como SnapInsta, SaveFrom.net, o IG Downloader
+2. Pega el URL del reel de Instagram
+3. Descarga el video en calidad HD
+4. Edita el video para que dure 5-10 segundos (opcional)
+5. Crea una imagen poster del primer frame
+6. Sube ambos archivos a esta carpeta
+
+ESPECIFICACIONES TÉCNICAS:
+- Fotos: JPG/WebP, mínimo 1200px de ancho
+- Reels: MP4, vertical (9:16), duración 10-20 segundos
+- Posters: JPG, mismo ratio que el video
+- Todos los archivos deben ser libres de derechos de autor
