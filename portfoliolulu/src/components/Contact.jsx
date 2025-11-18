@@ -84,10 +84,6 @@ const Contact = () => {
           <h2 className="font-display text-4xl lg:text-5xl font-bold text-primary mb-6">
             Hablemos de tu Proyecto
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Cada proyecto es único y me emociona conocer tu historia. 
-            Cuéntame tu idea y hagamos realidad esas imágenes que tienes en mente.
-          </p>
         </motion.div>
 
         {/* Main Contact Section */}

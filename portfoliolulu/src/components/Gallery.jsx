@@ -1,59 +1,116 @@
-import { useState, useEffect } from 'react'
+import { useMemo, useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Image, Video, Grid } from 'lucide-react'
+import { Image, Video, CheckCircle2, ArrowLeft } from 'lucide-react'
+import { gallery } from '../data/gallery'
+import { reels } from '../data/reels'
 import PhotoGallery from './PhotoGallery'
 import InstagramReels from './InstagramReels'
-import { getFilteredMedia, getCategoriesByType } from '../data/media'
+import { FALLBACK_SUBCATEGORY } from '../constants/gallery'
+
+// Función para aleatorizar array (Fisher-Yates shuffle)
+const shuffleArray = (array) => {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
+const CATEGORY_LABELS = {
+  ArqDiseño: 'Arq/Diseño',
+  Comida: 'Gastronomía'
+}
 
 const Gallery = () => {
-  const [selectedType, setSelectedType] = useState('photo') // Empezar con fotos
-  const [selectedCategory, setSelectedCategory] = useState('todas')
-  const [filteredMedia, setFilteredMedia] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [availableCategories, setAvailableCategories] = useState([])
+  const categories = useMemo(
+    () => Object.keys(gallery).filter((cat) => (gallery[cat]?.length ?? 0) > 0),
+    []
+  )
+  const [selectedType, setSelectedType] = useState('photo') // 'photo' o 'video'
+  const [selectedCategory, setSelectedCategory] = useState('Todos')
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null)
+  const shuffledCacheRef = useRef({ length: 0, images: [] })
 
-  const mediaTypes = [
-    { id: 'photo', name: 'Fotos', icon: Image },
-    { id: 'reel', name: 'Reels', icon: Video }
-  ]
+  // Obtener todas las imágenes sin aleatorizar (base)
+  const allImagesBase = useMemo(() => {
+    return categories.flatMap((category) => gallery[category])
+  }, [categories])
 
-  // Actualizar categorías disponibles cuando cambia el tipo
+  const categorySubcategories = useMemo(() => {
+    if (selectedCategory === 'Todos') return []
+    const images = gallery[selectedCategory] || []
+
+    const grouped = images.reduce((acc, image) => {
+      const key = image?.subcategory || FALLBACK_SUBCATEGORY
+      if (!acc[key]) {
+        acc[key] = {
+          images: [],
+          meta: image?.meta
+        }
+      }
+      if (!acc[key].meta && image?.meta) {
+        acc[key].meta = image.meta
+      }
+      acc[key].images.push(image)
+      return acc
+    }, {})
+
+    return Object.entries(grouped).map(([name, data]) => ({
+      name,
+      images: data.images,
+      cover: data.images[0]?.url,
+      count: data.images.length,
+      meta: data.meta
+    }))
+  }, [selectedCategory])
+
+  const currentSubcategory = useMemo(() => {
+    if (!selectedSubcategory) return null
+    return categorySubcategories.find((subcat) => subcat.name === selectedSubcategory) || null
+  }, [categorySubcategories, selectedSubcategory])
+
   useEffect(() => {
-    const categories = getCategoriesByType(selectedType)
-    setAvailableCategories(categories)
-    setSelectedCategory('todas') // Reset category when type changes
-  }, [selectedType])
+    setSelectedSubcategory(null)
+  }, [selectedCategory])
 
-  // Filtrar media cuando cambien los filtros
-  useEffect(() => {
-    setLoading(true)
-    
-    // Simular loading para mejor UX
-    const timer = setTimeout(() => {
-      const filtered = getFilteredMedia(selectedType, selectedCategory)
-      setFilteredMedia(filtered)
-      setLoading(false)
-    }, 300)
+  // Obtener todos los reels (sin categorías)
+  const reelsToShow = useMemo(() => {
+    return reels
+  }, [])
 
-    return () => clearTimeout(timer)
-  }, [selectedType, selectedCategory])
+  // Obtener imágenes según la categoría seleccionada
+  const imagesToShow = useMemo(() => {
+    if (selectedType !== 'photo') return []
 
-  const handleTypeChange = (type) => {
-    setSelectedType(type)
-  }
+    if (selectedCategory === 'Todos') {
+      const cacheEmpty = shuffledCacheRef.current.images.length === 0
+      const baseChanged = shuffledCacheRef.current.length !== allImagesBase.length
 
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category)
-  }
+      if (cacheEmpty || baseChanged) {
+        const shuffled = shuffleArray(allImagesBase)
+        shuffledCacheRef.current = {
+          length: allImagesBase.length,
+          images: shuffled.slice(0, Math.min(15, shuffled.length))
+        }
+      }
 
-  // Separar fotos y reels
-  const photos = filteredMedia.filter(item => item.type === 'photo')
-  const reels = filteredMedia.filter(item => item.type === 'reel')
-  
+      return shuffledCacheRef.current.images
+    }
 
+    shuffledCacheRef.current = { length: 0, images: [] }
+
+    if (!selectedSubcategory) {
+      return []
+    }
+
+    return (gallery[selectedCategory] || []).filter(
+      (image) => (image?.subcategory || FALLBACK_SUBCATEGORY) === selectedSubcategory
+    )
+  }, [selectedCategory, selectedSubcategory, selectedType, allImagesBase])
 
   return (
-    <section className="py-16 lg:py-24 bg-gray-50">
+    <section className="pt-16  lg:pt-24 lg:pb-2 bg-white text-black">
       <div className="container-max section-padding">
         {/* Section Header */}
         <motion.div
@@ -63,153 +120,251 @@ const Gallery = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-primary mb-6">
-            Mi Galería
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Explora mi trabajo a través de fotografías que capturan momentos únicos y 
-            reels que cuentan historias en movimiento. Cada imagen y video refleja mi pasión por el arte visual.
-          </p>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <span className="hidden sm:block w-14 h-px bg-black/15" />
+            <div className="relative inline-block">
+              <h2 className="text-4xl lg:text-5xl font-montserrat font-bold">
+                Mi Galería
+              </h2>
+            </div>
+            <span className="hidden sm:block w-14 h-px bg-black/15" />
+          </div>
         </motion.div>
 
-        {/* Type Filters */}
+        {/* Type Filters (Fotos/Videos) */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <div className="flex justify-center">
-            <div className="inline-flex bg-white rounded-xl p-2 shadow-sm border border-gray-200">
-              {mediaTypes.map((type) => {
-                const Icon = type.icon
+          <div className="flex flex-wrap justify-center gap-3">
+            <motion.button
+              onClick={() => setSelectedType('photo')}
+              className={`px-6 py-2 rounded-full border text-sm font-medium transition-all duration-200 hover:scale-105 flex items-center gap-2 ${
+                selectedType === 'photo'
+                  ? 'bg-accent text-white border-accent shadow-sm'
+                  : 'border-gray-700 text-gray-300 hover:border-accent hover:text-accent bg-black'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Image className="w-4 h-4" />
+              Fotos
+            </motion.button>
+            <motion.button
+              onClick={() => setSelectedType('video')}
+              className={`px-6 py-2 rounded-full border text-sm font-medium transition-all duration-200 hover:scale-105 flex items-center gap-2 ${
+                selectedType === 'video'
+                  ? 'bg-accent text-white border-accent shadow-sm'
+                  : 'border-gray-700 text-gray-300 hover:border-accent hover:text-accent bg-black'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Video className="w-4 h-4" />
+              Videos
+            </motion.button>
+          </div>
+        </motion.div>
+
+        {/* Category Filters - Solo para fotos */}
+        {selectedType === 'photo' && (
+          <div className="flex items-center justify-center mb-8 px-6">
+            <span className="block w-full max-w-4xl h-px bg-black/10" />
+          </div>
+        )}
+        {selectedType === 'photo' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mb-6"
+          >
+            <div className="flex flex-wrap justify-center gap-3">
+              {['Todos', ...categories].map((category) => {
+                const isActive = selectedCategory === category
+                const displayName = CATEGORY_LABELS[category] ?? category
                 return (
-                  <button
-                    key={type.id}
-                    onClick={() => handleTypeChange(type.id)}
-                    className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                      selectedType === type.id
-                        ? 'bg-accent text-white shadow-sm'
-                        : 'text-gray-600 hover:text-accent hover:bg-gray-50'
+                  <motion.button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`relative px-5 py-2 rounded-full border text-sm font-medium transition-all duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black ${
+                      isActive
+                        ? 'bg-accent text-white border-transparent shadow-lg shadow-accent/30'
+                        : 'border-gray-700 text-gray-300 hover:border-accent hover:text-accent bg-black'
                     }`}
+                    aria-pressed={isActive}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <Icon className="h-5 w-5" />
-                    <span>{type.name}</span>
-                  </button>
+                    {displayName}
+                    {isActive && (
+                      <span className="absolute inset-0 rounded-full border-2 border-white/40 pointer-events-none animate-pulse" />
+                    )}
+                  </motion.button>
                 )
               })}
             </div>
+          </motion.div>
+        )}
+        {selectedType === 'photo' && (
+          <div className="flex items-center justify-center mb-12 px-6">
+            <span className="block w-full max-w-4xl h-px bg-black/10" />
           </div>
-        </motion.div>
+        )}
 
-        {/* Category Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mb-12"
-        >
-          <div className="text-center mb-4">
-            <h3 className="text-lg font-semibold text-primary">
-              Categorías de {selectedType === 'photo' ? 'Fotografía' : 'Reels'}
-            </h3>
-          </div>
-          <div className="flex flex-wrap justify-center gap-3">
-            {availableCategories.map((category) => (
-              <motion.button
-                key={category.id}
-                onClick={() => handleCategoryChange(category.id)}
-                className={`px-4 py-2 rounded-full border text-sm font-medium transition-all duration-200 hover:scale-105 ${
-                  selectedCategory === category.id
-                    ? 'bg-accent text-white border-accent shadow-sm'
-                    : 'border-gray-300 text-gray-600 hover:border-accent hover:text-accent bg-white'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+        {/* Subcategorías destacadas */}
+        {selectedType === 'photo' &&
+          selectedCategory !== 'Todos' &&
+          categorySubcategories.length > 0 &&
+          (!selectedSubcategory ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="mb-12"
+            >
+              <div className="text-center mb-6">
+                <p className="text-sm uppercase tracking-[0.35em] text-gray-500">
+                  {selectedCategory}
+                </p>
+                <h3 className="text-3xl font-semibold text-black">Explora sus subcategorías</h3>
+                <p className="text-gray-600 mt-2">
+                  Elegí una serie para ver todas las fotos que la componen.
+                </p>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {categorySubcategories.map((subcat, index) => {
+                  const isActive = selectedSubcategory === subcat.name
+                  return (
+                    <motion.button
+                      key={subcat.name}
+                      onClick={() => setSelectedSubcategory(subcat.name)}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className={`group text-left rounded-2xl overflow-hidden border transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:ring-black ${
+                        isActive
+                          ? 'border-accent shadow-xl shadow-accent/20 scale-[1.02]'
+                          : 'border-black/10 hover:border-black/40'
+                      }`}
+                      aria-pressed={isActive}
+                    >
+                      <div className="relative aspect-[4/3] overflow-hidden">
+                        {subcat.cover ? (
+                          <img
+                            src={subcat.cover}
+                            alt={subcat.name}
+                            className={`w-full h-full object-cover transform transition duration-500 group-hover:scale-105 ${
+                              isActive ? 'grayscale-0' : 'grayscale group-hover:grayscale-0'
+                            }`}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300" />
+                        )}
+                        <div
+                          className={`absolute inset-0 transition-opacity duration-300 ${
+                            isActive
+                              ? 'bg-black/70'
+                              : 'bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-90'
+                          }`}
+                        />
+                        {isActive && (
+                          <>
+                            <div className="absolute inset-0 rounded-2xl border-[3px] border-accent/70 pointer-events-none" />
+                            <div className="absolute top-4 left-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/95 text-black text-xs font-semibold uppercase tracking-[0.3em] shadow-lg">
+                              <CheckCircle2 className="w-4 h-4 text-accent" />
+                              En foco
+                            </div>
+                          </>
+                        )}
+                        <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                          <p className="text-xs uppercase tracking-[0.6em] text-white/70 mb-2">
+                            {selectedCategory}
+                          </p>
+                          <p className="text-2xl font-semibold leading-tight">{subcat.name}</p>
+                          {subcat.meta?.para && (
+                            <p className="text-xs uppercase tracking-[0.4em] text-white/60 mt-1">
+                              para {subcat.meta.para}
+                            </p>
+                          )}
+                          <p className="text-sm text-white/80 mt-1">{subcat.count} fotografías</p>
+                        </div>
+                      </div>
+                    </motion.button>
+                  )
+                })}
+              </div>
+            </motion.div>
+          ) : (
+            currentSubcategory && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between rounded-2xl border border-black/10 bg-white text-black p-6 shadow-lg"
               >
-                {category.name}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Results Counter */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="mb-8"
-        >
-          <div className="text-center">
-            <div className="text-gray-600">
-              {loading ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-                  <span>Cargando...</span>
-                </div>
-              ) : (
-                <>
-                  {selectedType === 'photo' ? (
-                    `${photos.length} ${photos.length === 1 ? 'fotografía encontrada' : 'fotografías encontradas'}`
-                  ) : (
-                    `${reels.length} ${reels.length === 1 ? 'reel encontrado' : 'reels encontrados'}`
+                <div>
+                  <p className="text-xs uppercase tracking-[0.5em] text-gray-500 mb-2">
+                    {selectedCategory}
+                  </p>
+                  <h3 className="text-3xl font-semibold leading-tight text-black">{currentSubcategory.name}</h3>
+                  {currentSubcategory.meta?.para && (
+                    <p className="text-sm uppercase tracking-[0.35em] text-gray-500 mt-1">
+                      para {currentSubcategory.meta.para}
+                    </p>
                   )}
-                </>
-              )}
-            </div>
-          </div>
-        </motion.div>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {currentSubcategory.count} fotografías seleccionadas
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedSubcategory(null)}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-black/10 text-black text-sm font-semibold bg-gray-100 hover:bg-black hover:text-white transition-all duration-200"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Volver a subcategorías
+                </button>
+              </motion.div>
+            )
+          ))}
 
         {/* Gallery Content */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+          transition={{ duration: 0.8 }}
         >
           {selectedType === 'photo' ? (
-            <PhotoGallery photos={photos} loading={loading} />
+            selectedCategory !== 'Todos' &&
+            categorySubcategories.length > 0 &&
+            !selectedSubcategory ? (
+              <div className="text-center py-16">
+                <p className="text-sm uppercase tracking-[0.4em] text-gray-500 mb-3">
+                  {selectedCategory}
+                </p>
+                <h4 className="text-3xl font-semibold font-montserrat text-black mb-2">
+                  Elegí una subcategoría para continuar
+                </h4>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  Cada serie cuenta una historia distinta. Seleccioná una de las portadas
+                  para entrar y ver todas sus fotografías.
+                </p>
+              </div>
+            ) : (
+              <PhotoGallery images={imagesToShow} />
+            )
           ) : (
-            <InstagramReels reels={reels} loading={loading} />
+            <InstagramReels reels={reelsToShow} />
           )}
         </motion.div>
-
-        {/* Additional Info */}
-        {!loading && filteredMedia.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="mt-16 text-center"
-          >
-            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
-              <h3 className="font-display text-2xl font-bold text-primary mb-4">
-                {selectedType === 'photo' ? '¿Te gustan mis fotografías?' : '¿Te encantan mis reels?'}
-              </h3>
-              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                {selectedType === 'photo' 
-                  ? 'Cada fotografía está cuidadosamente compuesta para capturar no solo la imagen, sino la emoción del momento. Mi objetivo es crear recuerdos que perduren para siempre.'
-                  : 'Mis reels combinan técnica y creatividad para contar historias en movimiento. Cada video está diseñado para conectar emocionalmente y transmitir la esencia de cada momento.'
-                }
-              </p>
-              <button
-                onClick={() => {
-                  const contactSection = document.getElementById('contacto')
-                  if (contactSection) {
-                    contactSection.scrollIntoView({ behavior: 'smooth' })
-                  }
-                }}
-                className="inline-flex items-center space-x-2 bg-accent text-white px-6 py-3 rounded-lg font-semibold hover:bg-accent/90 transition-colors duration-200"
-              >
-                <span>Trabajemos Juntos</span>
-              </button>
-            </div>
-          </motion.div>
-        )}
       </div>
     </section>
   )

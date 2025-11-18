@@ -3,7 +3,40 @@
 @import 'tailwindcss/utilities';
 
 /* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+/* Custom Fonts - The Seasons */
+@font-face {
+  font-family: 'TheSeasons';
+  src: url('./assets/fonts/Fontspring-DEMO-theseasons-reg.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TheSeasons';
+  src: url('./assets/fonts/Fontspring-DEMO-theseasons-bd.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TheSeasons';
+  src: url('./assets/fonts/Fontspring-DEMO-theseasons-it.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'RetroSignature';
+  src: url('./assets/fonts/RetroSignature.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* Base styles */
 @layer base {
@@ -15,13 +48,36 @@
     @apply font-sans text-primary bg-light;
   }
   
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+  h1, h5, h6 {
+    @apply font-seasons;
   }
 }
 
 /* Component styles */
 @layer components {
+  /* Custom Font Classes */
+  .font-seasons {
+    font-family: 'TheSeasons', serif;
+    font-weight: 400;
+  }
+  
+  .font-seasons-bold {
+    font-family: 'TheSeasons', serif;
+    font-weight: 700;
+  }
+  
+  .font-seasons-italic {
+    font-family: 'TheSeasons', serif;
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .font-retro-signature {
+    font-family: 'RetroSignature', 'TheSeasons', serif;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+  }
+
   .btn-primary {
     @apply bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
   }
@@ -119,16 +175,10 @@
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Botones de navegación minimalistas */
+/* Ocultar botones de navegación nativos del lightbox */
 .yarl__navigation_prev,
 .yarl__navigation_next {
-  opacity: 0 !important;
-  transition: opacity 0.3s ease !important;
-}
-
-.yarl__container:hover .yarl__navigation_prev,
-.yarl__container:hover .yarl__navigation_next {
-  opacity: 1 !important;
+  display: none !important;
 }
 
 /* Ocultar todos los iconos de la toolbar */
@@ -136,38 +186,41 @@
   display: none !important;
 }
 
-/* Mejorar botones custom */
-button[aria-label="Imagen anterior"],
-button[aria-label="Siguiente imagen"],
-button[aria-label="Cerrar galería"] {
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.2s ease;
+/* Botones custom siempre visibles */
+.yarl__button_prev,
+.yarl__button_next,
+.yarl__button_close {
+  opacity: 1 !important;
+  display: flex !important;
+  pointer-events: auto !important;
+  position: fixed !important;
 }
 
-.yarl__container:hover button[aria-label="Imagen anterior"],
-.yarl__container:hover button[aria-label="Siguiente imagen"],
-.yarl__container:hover button[aria-label="Cerrar galería"] {
-  opacity: 1;
+/* Hover effect para botones - zoom y cambio de color */
+.yarl__button_prev:hover,
+.yarl__button_next:hover {
+  transform: translateY(-50%) scale(1.1) !important;
 }
 
-button[aria-label="Imagen anterior"]:hover,
-button[aria-label="Siguiente imagen"]:hover,
-button[aria-label="Cerrar galería"]:hover {
-  transform: scale(1.1);
+.yarl__button_close {
+  transform: none !important;
+}
+
+.yarl__button_close:hover {
+  transform: scale(1.1) !important;
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
 }
 
 /* Responsive para móvil */
 @media (max-width: 768px) {
-  button[aria-label="Imagen anterior"],
-  button[aria-label="Siguiente imagen"],
-  button[aria-label="Cerrar galería"] {
-    opacity: 0.7;
+  .yarl__button_prev,
+  .yarl__button_next {
+    opacity: 0.9 !important;
   }
   
-  .yarl__container:hover button[aria-label="Imagen anterior"],
-  .yarl__container:hover button[aria-label="Siguiente imagen"],
-  .yarl__container:hover button[aria-label="Cerrar galería"] {
-    opacity: 1;
+  .yarl__button_close {
+    opacity: 1 !important;
   }
 }
 

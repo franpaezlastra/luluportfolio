@@ -14,7 +14,10 @@ export default {
       },
       fontFamily: {
         'display': ['Playfair Display', 'serif'],
-        'sans': ['Inter', 'system-ui', 'sans-serif'],
+        'sans': ['Montserrat', 'system-ui', 'sans-serif'],
+        'seasons': ['TheSeasons', 'serif'],
+        'seasons-bold': ['TheSeasons', 'serif'],
+        'seasons-italic': ['TheSeasons', 'serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-in-out',

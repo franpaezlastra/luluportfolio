@@ -100,7 +100,7 @@ const About = () => {
                 <div className="relative">
                   <div className="aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl">
                     <img
-                      src="/demo/photographer.jpg"
+                      src="https://res.cloudinary.com/dum0alaoe/image/upload/v1763044138/luluabout_oqnxwh.jpg"
                       alt="Lulu - Fotógrafa Profesional"
                       className="w-full h-full object-cover"
                     />
@@ -152,51 +152,7 @@ const About = () => {
           </div>
         </section>
 
-        {/* Values Section */}
-        <section className="py-16 lg:py-24 bg-gray-50">
-          <div className="container-max section-padding">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="text-center mb-16"
-            >
-              <h2 className="font-display text-3xl lg:text-4xl font-bold text-primary mb-4">
-                Mi Filosofía
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Estos son los valores que guían cada proyecto y cada click de mi cámara.
-              </p>
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {values.map((value, index) => {
-                const Icon = value.icon
-                return (
-                  <motion.div
-                    key={value.title}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.2, duration: 0.6 }}
-                    className="text-center"
-                  >
-                    <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Icon className="h-8 w-8 text-white" />
-                    </div>
-                    <h3 className="font-semibold text-lg text-primary mb-3">
-                      {value.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {value.description}
-                    </p>
-                  </motion.div>
-                )
-              })}
-            </div>
-          </div>
-        </section>
+      
 
         {/* Skills Section */}
         <section className="py-16 lg:py-24">

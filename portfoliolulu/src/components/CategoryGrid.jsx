@@ -1,40 +1,41 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Zap, Mountain, Users, Briefcase, ArrowRight } from 'lucide-react'
+import { Zap, Mountain, Users, Briefcase, Image as ImageIcon, Layers, ArrowRight } from 'lucide-react'
+import { gallery } from '../data/gallery'
 
 const CategoryGrid = () => {
   const categories = [
     {
-      id: 'deporte',
-      name: 'Deporte',
+      id: 'Deportes',
+      name: 'Deportes',
       description: 'Capturando la pasión y energía del deporte',
-      image: '/demo/deporte1.jpg',
+      image: gallery.Deportes?.[0] ?? '',
       icon: Zap,
-      link: '/portfolio?category=deporte'
+      link: '/portfolio?category=Deportes'
     },
     {
-      id: 'paisajes',
-      name: 'Paisajes',
-      description: 'La belleza natural en su máximo esplendor',
-      image: '/demo/paisaje1.jpg',
-      icon: Mountain,
-      link: '/portfolio?category=paisajes'
+      id: 'ArqDiseño',
+      name: 'Arq/Diseño',
+      description: 'Arquitectura y diseño con una mirada artística',
+      image: gallery['ArqDiseño']?.[0] ?? '',
+      icon: Layers,
+      link: '/portfolio?category=ArqDiseño'
     },
     {
-      id: 'amigas',
-      name: 'Amigas',
-      description: 'Momentos únicos de amistad y complicidad',
-      image: '/demo/amigas1.jpg',
+      id: 'Comida',
+      name: 'Gastronomía',
+      description: 'El sabor de cada plato, capturado con detalle',
+      image: gallery.Comida?.[0] ?? '',
+      icon: ImageIcon,
+      link: '/portfolio?category=Comida'
+    },
+    {
+      id: 'Indumentaria',
+      name: 'Indumentaria',
+      description: 'Moda, estilo y actitud en cada fotografía',
+      image: gallery.Indumentaria?.[0] ?? '',
       icon: Users,
-      link: '/portfolio?category=amigas'
-    },
-    {
-      id: 'trabajo',
-      name: 'Trabajo',
-      description: 'Fotografía corporativa y profesional',
-      image: '/demo/trabajo1.jpg',
-      icon: Briefcase,
-      link: '/portfolio?category=trabajo'
+      link: '/portfolio?category=Indumentaria'
     }
   ]
 
@@ -91,7 +92,7 @@ const CategoryGrid = () => {
           animate="visible"
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          {categories.map((category) => {
+          {categories.filter((category) => Boolean(category.image)).map((category) => {
             const Icon = category.icon
             return (
               <motion.div
@@ -109,6 +110,7 @@ const CategoryGrid = () => {
                     <img
                       src={category.image}
                       alt={`Fotografía de ${category.name.toLowerCase()}`}
+                      loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                     

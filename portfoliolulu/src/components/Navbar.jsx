@@ -9,8 +9,8 @@ const Navbar = () => {
 
   const navigationLinks = [
     { name: 'Inicio', id: 'inicio' },
-    { name: 'Sobre mí', id: 'sobre-mi' },
     { name: 'Galería', id: 'galeria' },
+    { name: 'Sobre mí', id: 'sobre-mi' },
     { name: 'Contacto', id: 'contacto' }
   ]
 
@@ -66,26 +66,8 @@ const Navbar = () => {
       }`}
     >
       <div className="container-max section-padding">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
-          <button 
-            onClick={() => scrollToSection('inicio')}
-            className="flex items-center space-x-2 group focus-visible"
-            aria-label="Ir al inicio"
-          >
-            <Camera 
-              className={`h-8 w-8 transition-colors duration-200 ${
-                scrolled ? 'text-primary' : 'text-white'
-              } group-hover:text-accent`} 
-            />
-            <span 
-              className={`font-display text-xl lg:text-2xl font-semibold transition-colors duration-200 ${
-                scrolled ? 'text-primary' : 'text-white'
-              } group-hover:text-accent`}
-            >
-              Lulu
-            </span>
-          </button>
+        <div className="flex items-center justify-end h-16 lg:h-20">
+
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">

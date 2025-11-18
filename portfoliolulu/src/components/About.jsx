@@ -1,6 +1,13 @@
 import { motion } from 'framer-motion'
-import { Camera, Award, Heart, Users, Star, MapPin } from 'lucide-react'
+import { Camera, Award, Heart, Users, MapPin } from 'lucide-react'
 
+const ABOUT_IMAGE = 'https://res.cloudinary.com/dum0alaoe/image/upload/v1763044138/luluabout_oqnxwh.jpg'
+const ABOUT_GALLERY_TOP = [
+  'https://res.cloudinary.com/dum0alaoe/image/upload/v1763388261/About1_abogiz.webp'
+]
+const ABOUT_GALLERY_BOTTOM = [
+  'https://res.cloudinary.com/dum0alaoe/image/upload/v1763388261/About2_2_fiinpm.webp'
+]
 const About = () => {
   const values = [
     {
@@ -33,26 +40,11 @@ const About = () => {
   ]
 
   return (
-    <section className="py-16 lg:py-24 bg-white">
+    <section className="pt-16 pb-5 lg:pt-24 bg-black">
       <div className="container-max section-padding">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-primary mb-6">
-            Sobre mí
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Soy Lulu, una fotógrafa profesional con más de 5 años de experiencia capturando 
-            momentos únicos y emociones auténticas. Mi pasión es contar historias a través de cada imagen.
-          </p>
-        </motion.div>
+       
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-start mb-20">
           {/* Photo */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -64,7 +56,7 @@ const About = () => {
             <div className="relative">
               <div className="aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=800&h=1000&fit=crop&crop=center"
+                  src={ABOUT_IMAGE}
                   alt="Lulu - Fotógrafa Profesional"
                   className="w-full h-full object-cover"
                 />
@@ -79,15 +71,7 @@ const About = () => {
                 <span className="text-sm font-medium text-primary">Tucumán, Argentina</span>
               </div>
 
-              {/* Rating badge */}
-              <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 flex items-center space-x-2">
-                <div className="flex items-center space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-3 w-3 fill-accent text-accent" />
-                  ))}
-                </div>
-                <span className="text-sm font-medium text-primary">5.0</span>
-              </div>
+              
             </div>
           </motion.div>
 
@@ -99,118 +83,63 @@ const About = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="order-1 lg:order-2"
           >
-            <h3 className="font-display text-2xl lg:text-3xl font-bold text-primary mb-6">
-              Una mirada única al mundo
+            <h3 className="font-montserrat text-2xl text-white lg:text-3xl font-bold mb-6">
+              Sobre mí
             </h3>
-            <div className="space-y-4 text-gray-600 leading-relaxed">
+            <div className="space-y-4 text-white leading-relaxed">
               <p>
-                Mi viaje en la fotografía comenzó cuando descubrí que cada imagen tiene el poder 
-                de contar una historia y evocar sentimientos profundos. Lo que empezó como una 
-                pasión se convirtió en mi forma de vida.
+                Mi nombre es Lourdes (aunque todos los que me conocen me dicen Lulu). Nací en junio del 2000 en Tucumán, Argentina, y desde chica encontré un refugio en mirar el mundo en silencio.
               </p>
               <p>
-                Especializada en fotografía deportiva, paisajes, retratos y eventos corporativos, 
-                mi objetivo es crear imágenes que no solo documenten momentos, sino que los 
-                transformen en recuerdos eternos llenos de significado.
+                Mientras otros hablaban, yo observaba: el jardín de mi casa, las formas, las luces, los pequeños detalles que para mí siempre tuvieron algo para decir. Con el tiempo entendí que esa forma de mirar era también una forma de expresarme.
+              </p>
+              <div className="w-full py-2 space-y-3">
+                {ABOUT_GALLERY_TOP.map((photo, index) => (
+                  <div key={`${photo}-${index}`} className="w-full overflow-hidden rounded-2xl">
+                    <img
+                      src={photo}
+                      alt={`Proyecto fotográfico ${index + 1} de Lulu`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
+              <p>
+                Soy fotógrafa y creadora audiovisual. Empecé estudiando multimedial, después hice distintos cursos de fotografía, trabajé en empresas y agencias… pero siempre volví al mismo lugar: crear. Registrar. Contar historias a través de lo que veo y siento.
               </p>
               <p>
-                Cada proyecto es una nueva aventura, una oportunidad de conectar con personas 
-                increíbles y capturar su esencia de la manera más auténtica posible.
+                Algo que me define es la versatilidad. Puedo pasar de un retrato a un show, de gastronomía a arquitectura, de un proyecto íntimo a uno lleno de movimiento. Cada mundo me enseña algo diferente. A veces siento que quizás nunca tenga un “estilo propio” en el sentido tradicional, pero al mismo tiempo eso me hace feliz. Me gusta experimentar, probar, moverme. Elegir todos los caminos no es fácil, pero por ahora es el único que quiero recorrer.
+              </p>
+              <div className="w-full py-2 space-y-3">
+                {ABOUT_GALLERY_BOTTOM.map((photo, index) => (
+                  <div key={`${photo}-${index}`} className="w-full overflow-hidden rounded-2xl">
+                    <img
+                      src={photo}
+                      alt={`Proyecto fotográfico ${ABOUT_GALLERY_TOP.length + index + 1} de Lulu`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
+              <p>
+                Desde 2021 hago sesiones y desde marzo de este año me dedico 100% a esto. Me mueve capturar lo auténtico: una emoción real, un gesto, un instante que merece quedarse un poco más.
+              </p>
+              <p>
+                Si te gusta mi forma de mirar y contar, bienvenida/o. Me encantaría pensar con vos cómo contar tu historia.
               </p>
             </div>
 
+
             {/* Quick stats */}
-            <div className="mt-8 grid grid-cols-2 gap-6">
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-accent mb-1">500+</div>
-                <div className="text-sm text-gray-600">Proyectos</div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-accent mb-1">5+</div>
-                <div className="text-sm text-gray-600">Años</div>
-              </div>
-            </div>
           </motion.div>
         </div>
 
-        {/* Values */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mb-20"
-        >
-          <h3 className="font-display text-2xl lg:text-3xl font-bold text-primary text-center mb-12">
-            Mi Filosofía
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => {
-              const Icon = value.icon
-              return (
-                <motion.div
-                  key={value.title}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.6 }}
-                  className="text-center group"
-                >
-                  <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-accent/20 transition-colors duration-300">
-                    <Icon className="h-8 w-8 text-accent" />
-                  </div>
-                  <h4 className="font-semibold text-lg text-primary mb-3">
-                    {value.title}
-                  </h4>
-                  <p className="text-gray-600 leading-relaxed text-sm">
-                    {value.description}
-                  </p>
-                </motion.div>
-              )
-            })}
-          </div>
-        </motion.div>
+
 
         {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="bg-primary rounded-2xl p-8 lg:p-12 text-white"
-        >
-          <div className="text-center mb-12">
-            <h3 className="font-display text-2xl lg:text-3xl font-bold mb-4">
-              Mi Trayectoria en Números
-            </h3>
-            <p className="text-gray-300 max-w-2xl mx-auto">
-              Cada número representa historias capturadas, momentos inmortalizados y sueños hechos realidad.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="text-center"
-              >
-                <div className="text-3xl lg:text-4xl font-bold text-accent mb-2">
-                  {stat.number}
-                </div>
-                <div className="font-semibold text-lg mb-2">
-                  {stat.label}
-                </div>
-                <div className="text-sm text-gray-300">
-                  {stat.description}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+       
       </div>
     </section>
   )

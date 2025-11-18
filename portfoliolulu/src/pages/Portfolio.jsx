@@ -1,57 +1,28 @@
-import { useState, useEffect } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import MediaFilters from '../components/MediaFilters'
 import PhotoGallery from '../components/PhotoGallery'
-import { getFilteredMedia } from '../data/media'
+import { gallery } from '../data/gallery'
 
 const Portfolio = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [selectedType, setSelectedType] = useState('photo') // Solo fotos por defecto
-  const [selectedCategory, setSelectedCategory] = useState('todas')
-  const [filteredMedia, setFilteredMedia] = useState([])
-  const [loading, setLoading] = useState(false)
+  const categories = useMemo(() => ['Todos', ...Object.keys(gallery)], [])
+  const [selectedCategory, setSelectedCategory] = useState(categories[0])
 
-  // Inicializar filtros desde URL
   useEffect(() => {
-    const typeParam = searchParams.get('type') || 'photo'
-    const categoryParam = searchParams.get('category') || 'todas'
-    
-    setSelectedType(typeParam)
-    setSelectedCategory(categoryParam)
-  }, [searchParams])
+    const categoryParam = searchParams.get('category')
+    if (categoryParam && categories.includes(categoryParam)) {
+      setSelectedCategory(categoryParam)
+    }
+  }, [categories, searchParams])
 
-  // Filtrar media cuando cambien los filtros
-  useEffect(() => {
-    setLoading(true)
-    
-    // Simular loading para mejor UX
-    const timer = setTimeout(() => {
-      const filtered = getFilteredMedia(selectedType, selectedCategory)
-      setFilteredMedia(filtered)
-      setLoading(false)
-    }, 300)
-
-    return () => clearTimeout(timer)
-  }, [selectedType, selectedCategory])
-
-  const handleTypeChange = (type) => {
-    setSelectedType(type)
-    const params = new URLSearchParams(searchParams)
-    params.set('type', type)
-    setSearchParams(params)
-  }
-
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category)
-    const params = new URLSearchParams(searchParams)
-    params.set('category', category)
-    setSearchParams(params)
-  }
-
-  // Filtrar solo fotos para esta página
-  const photos = filteredMedia.filter(item => item.type === 'photo')
+  const images = useMemo(() => {
+    if (selectedCategory === 'Todos') {
+      return Object.values(gallery).flat()
+    }
+    return gallery[selectedCategory] || []
+  }, [selectedCategory])
 
   const pageVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -63,6 +34,13 @@ const Portfolio = () => {
         ease: 'easeOut'
       }
     }
+  }
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category)
+    const params = new URLSearchParams(searchParams)
+    params.set('category', category)
+    setSearchParams(params)
   }
 
   return (
@@ -111,21 +89,29 @@ const Portfolio = () => {
             </motion.p>
           </div>
 
-          {/* Filters */}
+          {/* Category Filters */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
             className="mb-12"
           >
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <MediaFilters
-                selectedType={selectedType}
-                selectedCategory={selectedCategory}
-                onTypeChange={handleTypeChange}
-                onCategoryChange={handleCategoryChange}
-                showTypeFilter={true}
-              />
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-3 justify-center">
+              {categories.map((category) => (
+                <motion.button
+                  key={category}
+                  onClick={() => handleCategoryChange(category)}
+                  className={`px-4 py-2 rounded-full border text-sm font-medium transition-all duration-200 hover:scale-105 ${
+                    selectedCategory === category
+                      ? 'bg-accent text-white border-accent shadow-sm'
+                      : 'border-gray-300 text-gray-600 hover:border-accent hover:text-accent bg-white'
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {category}
+                </motion.button>
+              ))}
             </div>
           </motion.div>
 
@@ -134,15 +120,9 @@ const Portfolio = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="mb-8"
+            className="mb-8 text-center text-gray-600"
           >
-            <p className="text-gray-600">
-              {loading ? (
-                'Cargando...'
-              ) : (
-                `${photos.length} ${photos.length === 1 ? 'fotografía encontrada' : 'fotografías encontradas'}`
-              )}
-            </p>
+            {`${images.length} ${images.length === 1 ? 'fotografía' : 'fotografías'} disponibles`}
           </motion.div>
 
           {/* Gallery */}
@@ -151,28 +131,11 @@ const Portfolio = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <PhotoGallery photos={photos} loading={loading} />
+            <PhotoGallery
+              category={selectedCategory === 'Todos' ? undefined : selectedCategory}
+              images={images}
+            />
           </motion.div>
-
-          {/* Load More Button (Future Implementation) */}
-          {!loading && photos.length > 0 && photos.length >= 20 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="text-center mt-12"
-            >
-              <button
-                className="btn-secondary"
-                onClick={() => {
-                  // Implementar lógica de "cargar más" aquí
-                  console.log('Load more photos')
-                }}
-              >
-                Cargar Más Fotos
-              </button>
-            </motion.div>
-          )}
         </div>
       </motion.div>
     </>

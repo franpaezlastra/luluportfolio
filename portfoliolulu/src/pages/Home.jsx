@@ -3,10 +3,23 @@ import { motion } from 'framer-motion'
 import Hero from '../components/Hero'
 import CarouselFeatured from '../components/CarouselFeatured'
 import CategoryGrid from '../components/CategoryGrid'
-import { getFeaturedMedia } from '../data/media'
+import { gallery } from '../data/gallery'
+
+const buildFeaturedItems = () => {
+  return Object.entries(gallery).flatMap(([category, urls]) =>
+    urls.slice(0, 2).map((url, index) => ({
+      id: `${category}-${index}`,
+      src: url,
+      title: `${category} ${index + 1}`,
+      caption: `Galería de ${category}`,
+      category,
+      type: 'photo'
+    }))
+  )
+}
 
 const Home = () => {
-  const featuredItems = getFeaturedMedia()
+  const featuredItems = buildFeaturedItems()
 
   return (
     <>
